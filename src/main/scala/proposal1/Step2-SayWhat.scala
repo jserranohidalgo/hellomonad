@@ -7,7 +7,7 @@ object SayWhat {
     println("Hello, world!")
 
   def sayWhat: String =
-    readLine("Say what?")
+    readLine
 
   /* Functional solution */
 
@@ -15,11 +15,11 @@ object SayWhat {
 
     // Effect language
 
-    type IOProgram[A] = IOInstruction[A]
+    type IOProgram[A] = IOEffect[A]
 
-    sealed trait IOInstruction[A]
-    case class Write(msg: String) extends IOInstruction[Unit]
-    case class Read(msg: String) extends IOInstruction[String]
+    sealed trait IOEffect[A]
+    case class Write(msg: String) extends IOEffect[Unit]
+    case object Read extends IOEffect[String]
 
     // Program
 
@@ -27,14 +27,14 @@ object SayWhat {
       Write("Hello, world!")
 
     def pureSayWhat: IOProgram[String] =
-      Read("Say what?")
+      Read
 
     // Interpreter
 
     def run[A](program: IOProgram[A]): A =
       program match {
         case Write(msg) => println(msg)
-        case Read(msg) => readLine(msg)
+        case Read => readLine
       }
 
     // Composition

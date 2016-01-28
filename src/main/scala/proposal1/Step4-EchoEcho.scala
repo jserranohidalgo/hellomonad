@@ -7,7 +7,7 @@ object EchoEcho {
     println("Hello, world!")
 
   def sayWhat: String =
-    readLine("Say what?")
+    readLine
 
   def helloSayWhat: String = {
     hello
@@ -15,7 +15,7 @@ object EchoEcho {
   }
 
   def echo: Unit = {
-    val msg = readLine("Say what?")
+    val msg = readLine
     println(msg)
   }
 
@@ -26,42 +26,42 @@ object EchoEcho {
     // Effect language
 
     sealed trait IOProgram[A]
-    case class Instruction[A](inst: IOInstruction[A]) extends IOProgram[A]
+    case class Effect[A](inst: IOEffect[A]) extends IOProgram[A]
     case class Sequence[A, B](p: IOProgram[A], cont: A => IOProgram[B]) extends IOProgram[B]
 
-    sealed trait IOInstruction[A]
-    case class Write(msg: String) extends IOInstruction[Unit]
-    case class Read(msg: String) extends IOInstruction[String]
+    sealed trait IOEffect[A]
+    case class Write(msg: String) extends IOEffect[Unit]
+    case object Read extends IOEffect[String]
 
     // Program
 
     def pureHello: IOProgram[Unit] =
-      Instruction(Write("Hello, world!"))
+      Effect(Write("Hello, world!"))
 
     def pureSayWhat: IOProgram[String] =
-      Instruction(Read("Say what?"))
+      Effect(Read)
 
     def pureHelloSayWhat: IOProgram[String] =
       Sequence(pureHello, (_: Unit) => pureSayWhat)
 
     def pureEcho: IOProgram[Unit] =
-      Sequence(pureSayWhat, (s: String) => Instruction(Write(s)))
+      Sequence(pureSayWhat, (s: String) => Effect(Write(s)))
 
     // Interpreter
 
     def runProgram[A](program: IOProgram[A]): A =
       program match {
-        case Instruction(inst) => runInstruction(inst)
+        case Effect(inst) => runEffect(inst)
         case Sequence(p, cont) =>
           val res = runProgram(p)
           val p2 = cont(res)
           runProgram(p2)
       }
 
-    def runInstruction[A](inst: IOInstruction[A]): A =
+    def runEffect[A](inst: IOEffect[A]): A =
       inst match {
         case Write(msg) => println(msg)
-        case Read(msg) => readLine(msg)
+        case Read => readLine
       }
 
     // Composition
