@@ -1,5 +1,5 @@
 
-object HelloSayWhat { 
+object SayWhatReloaded { 
 
   /* Impure program */
 
