@@ -6,7 +6,7 @@
 let hello() = printfn "Hello World!"
 
 
-// Equivalent to the functional scala example 
+// Version equivalent to the functional scala example 
 let Write s = printfn s
 
 type IOProgram = Write of string
