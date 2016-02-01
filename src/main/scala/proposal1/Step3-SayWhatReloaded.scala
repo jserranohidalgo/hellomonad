@@ -3,15 +3,9 @@ object SayWhatReloaded {
 
   /* Impure program */
 
-  def hello: Unit =
-    println("Hello, world!")
-
-  def sayWhat: String =
+  def sayWhat: String = {
+    println("Say what?")
     readLine
-
-  def helloSayWhat: String = {
-    hello
-    sayWhat
   }
 
   /* Functional solution */
@@ -30,14 +24,9 @@ object SayWhatReloaded {
 
     // Program
 
-    def pureHello: IOProgram[Unit] =
-      Effect(Write("Hello, world!"))
-
     def pureSayWhat: IOProgram[String] =
-      Effect(Read)
-
-    def pureHelloSayWhat: IOProgram[String] =
-      Sequence(pureHello, pureSayWhat)
+      Sequence(Effect(Write("Say what?")), 
+        Effect(Read))
 
     // Interpreter
 
@@ -57,9 +46,7 @@ object SayWhatReloaded {
 
     // Composition
 
-    def hello: Unit = runProgram(pureHello)
-    def sayWhat: String = runProgram(pureSayWhat)
-    def helloSayWhat: String = runProgram(pureHelloSayWhat)
+    def helloSayWhat: String = runProgram(pureSayWhat)
 
   }
 

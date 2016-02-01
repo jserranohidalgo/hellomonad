@@ -3,9 +3,6 @@ object SayWhat {
 
   /* Impure program */
 
-  def hello: Unit =
-    println("Hello, world!")
-
   def sayWhat: String =
     readLine
 
@@ -23,9 +20,6 @@ object SayWhat {
 
     // Program
 
-    def pureHello: IOProgram[Unit] =
-      Write("Hello, world!")
-
     def pureSayWhat: IOProgram[String] =
       Read
 
@@ -39,7 +33,6 @@ object SayWhat {
 
     // Composition
 
-    def hello: Unit = run(pureHello)
     def sayWhat: String = run(pureSayWhat)
 
   }

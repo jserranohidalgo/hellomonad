@@ -3,23 +3,7 @@ object EchoEchoReloaded {
 
   /* Impure program */
 
-  def hello: Unit =
-    println("Hello, world!")
-
-  def sayWhat: String =
-    readLine
-
-  def sayWhatReloaded: String = {
-    hello
-    sayWhat
-  }
-
-  def echo: Unit = {
-    val msg = readLine
-    println(msg)
-  }
-
-  def echoReloaded: String = {
+  def echo: String = {
     val msg = readLine
     println(msg)
     msg
@@ -42,20 +26,8 @@ object EchoEchoReloaded {
 
     // Program
 
-    def pureHello: IOProgram[Unit] =
-      Effect(Write("Hello, world!"))
-
-    def pureSayWhat: IOProgram[String] =
-      Effect(Read)
-
-    def pureSayWhatReloaded: IOProgram[String] =
-      Sequence(pureHello, (_: Unit) => pureSayWhat)
-
-    def pureEcho: IOProgram[Unit] =
-      Sequence(pureSayWhat, (s: String) => Effect(Write(s)))
-
-    def pureEchoReloaded: IOProgram[String] =
-      Sequence(pureSayWhat, (s: String) =>
+    def pureEcho: IOProgram[String] =
+      Sequence(Effect(Read), (s: String) =>
         Sequence(Effect(Write(s)), (_: Unit) =>
           Value(s)
         )
@@ -81,11 +53,7 @@ object EchoEchoReloaded {
 
     // Composition
 
-    def hello: Unit = runProgram(pureHello)
-    def sayWhat: String = runProgram(pureSayWhat)
-    def sayWhatReloaded: String = runProgram(pureSayWhatReloaded)
-    def echo: Unit = runProgram(pureEcho)
-    def echoReloaded: String = runProgram(pureEchoReloaded)
+    def echo: String = runProgram(pureEcho)
 
   }
 

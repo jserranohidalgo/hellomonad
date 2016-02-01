@@ -3,23 +3,7 @@ object Sugar {
 
   /* Impure program */
 
-  def hello: Unit =
-    println("Hello, world!")
-
-  def sayWhat: String =
-    readLine
-
-  def sayWhatReloaded: String = {
-    hello
-    sayWhat
-  }
-
-  def echo: Unit = {
-    val msg = readLine
-    println(msg)
-  }
-
-  def echoReloaded: String = {
+  def echo: String = {
     val msg = readLine
     println(msg)
     msg
@@ -43,11 +27,7 @@ object Sugar {
     case class Sequence[A, B](p: IOProgram[A], cont: A => IOProgram[B]) extends IOProgram[B]
     case class Value[A](a: A) extends IOProgram[A]
 
-    sealed trait IOEffect[A]
-    case class Write(msg: String) extends IOEffect[Unit]
-    case object Read extends IOEffect[String]
-
-    object IOEffect {
+    object IOProgram {
       def write(msg: String): IOProgram[Unit] =
         Effect(Write(msg))
 
@@ -55,30 +35,19 @@ object Sugar {
         Effect(Read)
     }
 
+    sealed trait IOEffect[A]
+    case class Write(msg: String) extends IOEffect[Unit]
+    case object Read extends IOEffect[String]
+
     // Program
 
-    import IOEffect._
+    import IOProgram._
 
-    def pureHello: IOProgram[Unit] =
-      write("Hello, world!")
-
-    def pureSayWhat: IOProgram[String] =
-      read
-
-    def pureSayWhatReloaded: IOProgram[String] =
+    def pureEcho: IOProgram[String] =
       for {
-        _ <- pureHello
-        s <- pureSayWhat
-      } yield s
-
-    def pureEcho: IOProgram[Unit] =
-      pureSayWhat flatMap write
-
-    def pureEchoReloaded: IOProgram[String] =
-      for {
-        s <- pureSayWhat
+        s <- read
         _ <- write(s)
-      } yield (s)
+      } yield s
 
     // Interpreter
 
@@ -100,11 +69,7 @@ object Sugar {
 
     // Composition
 
-    def hello: Unit = runProgram(pureHello)
-    def sayWhat: String = runProgram(pureSayWhat)
-    def sayWhatReloaded: String = runProgram(pureSayWhatReloaded)
-    def echo: Unit = runProgram(pureEcho)
-    def echoReloaded: String = runProgram(pureEchoReloaded)
+    def echo: String = runProgram(pureEcho)
 
   }
 
