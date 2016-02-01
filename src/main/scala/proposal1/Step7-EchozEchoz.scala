@@ -35,11 +35,11 @@ object EchozEchoz {
       for {
         s <- read
         _ <- write(s)
-      } yield (s)
+      } yield s
 
     // Interpreter
 
-    val consoleInterpreter = new ~>[IOEffect, Id] {
+    val runEffect = new ~>[IOEffect, Id] {
       def apply[A](eff: IOEffect[A]): A = eff match {
         case Write(msg) => println(msg)
         case Read => readLine
@@ -49,7 +49,7 @@ object EchozEchoz {
 
     // Composition
 
-    def echo: String = pureEcho.foldMap(consoleInterpreter)
+    def echo: String = pureEcho.foldMap(runEffect)
 
   }
 
